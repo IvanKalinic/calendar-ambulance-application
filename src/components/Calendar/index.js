@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { calculateFullDate } from "../../utils";
 import { months, days, hours, emptyEvents } from "../../consts";
 import "./index.scss";
+import MessagePopup from "../MessagePopup";
 const { datesGenerator } = require("dates-generator");
 
 const Calendar = () => {
@@ -9,13 +10,17 @@ const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(selectedDate));
   const [dates, setDates] = useState([]);
   const [content, setContent] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
   // console.log(calendar);
   const [reservedDate, setReservedDate] = useState({
     key: "",
     events: emptyEvents,
   });
 
-  const handleAddEvent = (day, index) => {};
+  const handleEvent = (day, index) => {
+    setShowPopup((prev) => !prev);
+    // handleAddEvent(day, index)
+  };
 
   console.log(reservedDate.events);
 
@@ -67,6 +72,10 @@ const Calendar = () => {
         <div className="month">{months[calendar.month]}</div>
         <div>
           <table className="calendar-table" style={{ width: "100%" }}>
+            <MessagePopup
+              showMessage={showPopup}
+              setShowMessage={setShowPopup}
+            />
             <tbody>
               <tr className="flex-container">
                 <td
@@ -118,10 +127,7 @@ const Calendar = () => {
                   {dates.map((day, index) => (
                     <td key={index} className="cell cell-events">
                       {reservedDate.events.map((ev, index) => (
-                        <button
-                          className="event-btn"
-                          onClick={(day, index) => handleAddEvent(day, index)}
-                        >
+                        <button className="event-btn" onClick={handleEvent}>
                           {ev?.content}
                         </button>
                       ))}
