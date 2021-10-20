@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { calculateFullDate } from "../../utils";
+import { calculateFullDate, getDayName } from "../../utils";
 import { months, days, hours, emptyEvents } from "../../consts";
 import "./index.scss";
 import MessagePopup from "../MessagePopup";
@@ -11,6 +11,7 @@ const Calendar = () => {
   const [dates, setDates] = useState([]);
   const [content, setContent] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  let tempDays = [];
   // console.log(calendar);
   const [reservedDate, setReservedDate] = useState({
     key: "",
@@ -33,14 +34,29 @@ const Calendar = () => {
     const { dates, nextMonth, nextYear, previousMonth, previousYear } =
       datesGenerator(body);
 
-    // setDates([...dates]);
-    setDates(
-      dates.find((week) =>
-        week.find(
-          (day) => day.date === calendar.day && day.month === calendar.month
-        )
-      )
+    // setDates(
+    //   dates.find((week) =>
+    //     week.find(
+    //       (day) => day.date === calendar.day && day.month === calendar.month
+    //       // (day) => day.date > calendar.day && day.date < calendar.day + 7
+    //     )
+    //   )
+    // );
+
+    dates.map((week) =>
+      week.forEach((day) => {
+        if (
+          day.date > calendar.day &&
+          day.date < calendar.day + 8 &&
+          day.month >= calendar.month
+        ) {
+          tempDays.push(day);
+        }
+      })
     );
+
+    setDates(tempDays);
+
     setCalendar({
       ...calendar,
       nextMonth,
@@ -48,23 +64,8 @@ const Calendar = () => {
       previousMonth,
       previousYear,
     });
-    // console.log({ dates, nextMonth, nextYear, previousMonth, previousYear });
   }, []);
 
-  // const findCurrentWeek = () => {
-  //   setDates(
-  //     dates.find((week) =>
-  //       week.find(
-  //         (day) => day.date === calendar.day && day.month === calendar.month
-  //       )
-  //     )
-  //   );
-  //   // return dates.find(
-  //   //   (week) => week.date === calendar.day && week.month === calendar.month
-  //   // );
-  // };
-
-  // console.log(dates);
   console.log(dates);
   return (
     <div className="calendar-parent-container">
@@ -83,7 +84,7 @@ const Calendar = () => {
                 >
                   Hours
                 </td>
-                {days.map((day) => (
+                {dates.map((day) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
                     <div
                       style={{
@@ -91,28 +92,11 @@ const Calendar = () => {
                         padding: "5px 0",
                       }}
                     >
-                      {day}
+                      {getDayName(day.jsDate)}
                     </div>
                   </td>
                 ))}
               </tr>
-
-              {/* {dates.length > 0 &&
-                dates.map((week) => (
-                  <tr key={JSON.stringify(week[0])}>
-                    {week.map((each) => (
-                      <td
-                        key={JSON.stringify(each)}
-                        style={{ padding: "5px 0" }}
-                      >
-                        <div style={{ textAlign: "center", padding: "5px 0" }}>
-                          {each.date + 1}
-                        </div>
-                      </td>
-                    ))}
-                  </tr>
-                ))} */}
-
               {dates.length > 0 && (
                 <tr className="flex-container">
                   <td className="cell">
@@ -131,7 +115,6 @@ const Calendar = () => {
                           {ev?.content}
                         </button>
                       ))}
-                      {/* <div style={{ marginTop: "200px" }}>{day.date + 1}</div> */}
                     </td>
                   ))}
                 </tr>

@@ -14,7 +14,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
             className="form__input"
             autoComplete="off"
             placeholder=" "
-            value={value}
+            value={value} // event.content
             onChange={(e) => setValue(e.target.value)}
           ></input>
           <button>Add</button>
