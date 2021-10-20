@@ -41,7 +41,7 @@
 .event-btn {
   background: none;
   border: 0.5px solid black;
-  color: white;
+  background-color: white;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -49,4 +49,11 @@
   cursor: pointer;
   height: 32px;
   width: 100%;
+  color: black;
+}
+.grey {
+  background-color: grey;
+}
+.yellow {
+  background-color: yellow;
 }

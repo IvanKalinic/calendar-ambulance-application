@@ -30,3 +30,23 @@ export const calculateFullDate = (selectedDate) => {
 export const getDayName = (jsDate) => {
   return new Date(jsDate).toLocaleDateString("hr", { weekday: "long" });
 };
+
+export const returnArray = (day) => {
+  let temp = [];
+  if (day % 2 === 0) {
+    for (let i = 1; i < 22; i++) {
+      temp.push("");
+      if (i === 6) {
+        temp.push("Pauza");
+      }
+    }
+  } else {
+    for (let i = 1; i < 22; i++) {
+      temp.push("");
+      if (i === 16) {
+        temp.push("Pauza");
+      }
+    }
+  }
+  return temp;
+};
