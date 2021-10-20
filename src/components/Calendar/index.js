@@ -84,52 +84,15 @@ const Calendar = () => {
         color: day.color,
       })
     );
-    // console.log("This is temp" + tempReservedDates);
-    console.log(tempReservedDates);
 
     tempReservedDates?.forEach((day) => {
-      console.log(day);
-      day.events = returnArray(day.key);
-      // if (day.key % 2 === 0) {
-      //   console.log(day.events[6]);
-      //   day.events[6] = "";
-      // } else {
-      //   day.events[16] = "";
-      // }
-      // if (day.key % 2 === 0) {
-      //   for (let i = 0; i < 22; i++) {
-      //     day.events[i] = "";
-      //     if (i === 6) {
-      //       day.events[i] = "Pauza";
-      //     }
-      //   }
-      //   console.log(day.events);
-      // } else {
-      //   for (let i = 0; i < 22; i++) {
-      //     day.events[i] = "";
-      //     if (i === 16) {
-      //       day.events[i] = "Pauza";
-      //     }
-      //   }
-      // }
-
-      // else if (day.events[6] === "Pauza") {
-      //   day.events[16] = "Pauza";
-      //   day.events[6] = "";
-      //   // for (let i = 0; i <= 11; i++) {
-      //   //   events[i] = "Prva smjena";
-      //   // }
-      //   // for (let i = 11; i <= 22; i++) {
-      //   //   events[i] = "Radimo";
-      //   // }
-      //   // day.events[6] = "";
-      // }
+      day.events = returnArray(day.key, calendar);
     });
-    // console.log(tempReservedDates);
+
     setReservedDate(tempReservedDates);
   }, [dates]);
 
-  // console.log(dates);
+  console.log(dates);
   console.log(reservedDate);
 
   // reservedDate?.forEach((day, index) => {
@@ -200,16 +163,15 @@ const Calendar = () => {
                         <button
                           key={evIndex}
                           className={`event-btn ${reservedDate[index]?.color} ${
-                            ev === "Pauza" &&
                             reservedDate[index]?.color !== "grey"
-                              ? "yellow"
+                              ? `${ev.color}`
                               : null
                           }`}
                           onClick={handleEvent}
                         >
                           {reservedDate[index]?.color === "grey"
                             ? "Ne radimo"
-                            : ev}
+                            : ev.content}
                         </button>
                       ))}
                     </td>

@@ -31,20 +31,37 @@ export const getDayName = (jsDate) => {
   return new Date(jsDate).toLocaleDateString("hr", { weekday: "long" });
 };
 
-export const returnArray = (day) => {
+export const returnArray = (day, calendar) => {
   let temp = [];
   if (day % 2 === 0) {
     for (let i = 1; i < 22; i++) {
-      temp.push("");
-      if (i === 6) {
-        temp.push("Pauza");
+      if (i < 12) {
+        temp.push({ color: "green", content: "" });
+        if (i === 6) {
+          temp.push({ color: "yellow", content: "Pauza" });
+        }
+      } else {
+        temp.push({ color: "grey", content: "Ne radimo" });
       }
     }
   } else {
-    for (let i = 1; i < 22; i++) {
-      temp.push("");
-      if (i === 16) {
-        temp.push("Pauza");
+    for (let i = 1; i < 23; i++) {
+      if (i > 10) {
+        if (
+          getDayName(
+            `${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`
+          ) === "subota"
+        ) {
+          temp.push({ color: "grey", content: "Ne radimo" });
+        } else {
+          if (i === 16) {
+            temp.push({ color: "yellow", content: "Pauza" });
+          } else {
+            temp.push({ color: "green", content: "" });
+          }
+        }
+      } else {
+        temp.push({ color: "grey", content: "Ne radimo" });
       }
     }
   }
