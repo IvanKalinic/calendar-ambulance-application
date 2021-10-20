@@ -6,21 +6,13 @@ import MessagePopup from "../MessagePopup";
 const { datesGenerator } = require("dates-generator");
 
 const Calendar = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [calendar, setCalendar] = useState(calculateFullDate(selectedDate));
+  const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [dates, setDates] = useState([]);
   const [content, setContent] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [reservedDate, setReservedDate] = useState([]);
   let tempDays = [];
   let tempReservedDates = [];
-  // console.log(calendar);
-  const [reservedDate, setReservedDate] = useState([
-    // {
-    //   key: "",
-    //   events: emptyEvents,
-    // },
-  ]);
-  const [weekEvents, setWeekEvents] = useState([]);
 
   const handleEvent = (day, index, e) => {
     setShowPopup((prev) => !prev);
@@ -37,6 +29,8 @@ const Calendar = () => {
     };
     const { dates, nextMonth, nextYear, previousMonth, previousYear } =
       datesGenerator(body);
+
+    //za next week opcija
 
     // setDates(
     //   dates.find((week) =>
@@ -91,30 +85,6 @@ const Calendar = () => {
 
     setReservedDate(tempReservedDates);
   }, [dates]);
-
-  console.log(dates);
-  console.log(reservedDate);
-
-  // reservedDate?.forEach((day, index) => {
-  //   console.log(day);
-  //   if (day.key % 2 === 0) {
-  //     for (let i = 0; i < 22; i++) {
-  //       day.events[i] = "";
-  //       if (i === 6) {
-  //         day.events[i] = "Pauza";
-  //       }
-  //     }
-  //     console.log(day.events);
-  //   }
-  //   if (day.key % 2 !== 0) {
-  //     for (let i = 0; i < 22; i++) {
-  //       day.events[i] = "";
-  //       if (i === 16) {
-  //         day.events[i] = "Pauza";
-  //       }
-  //     }
-  //   }
-  // });
 
   return (
     <div className="calendar-parent-container">

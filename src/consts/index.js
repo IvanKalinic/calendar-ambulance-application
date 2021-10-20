@@ -1,16 +1,16 @@
 export const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  "Siječanj",
+  "Veljača",
+  "Ožujak",
+  "Travanj",
+  "Svibanj",
+  "Lipanj",
+  "Srpanj",
+  "Kolovoz",
+  "Rujan",
+  "Listopad",
+  "Studeni",
+  "Prosinac",
 ];
 
 export const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
