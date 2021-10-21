@@ -34,19 +34,26 @@ export const getDayName = (jsDate) => {
 export const returnArray = (day, calendar) => {
   let temp = [];
   if (day % 2 === 0) {
-    for (let i = 1; i < 22; i++) {
+    for (let i = 0; i < 22; i++) {
       if (i < 12) {
-        temp.push({ color: "green", content: "" });
         if (i === 6) {
           temp.push({ color: "yellow", content: "Pauza" });
+        } else if (
+          getDayName(
+            `${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`
+          ) === "nedjelja"
+        ) {
+          temp.push({ color: "grey", content: "Ne radimo" });
+        } else {
+          temp.push({ color: "green", content: "" });
         }
       } else {
         temp.push({ color: "grey", content: "Ne radimo" });
       }
     }
   } else {
-    for (let i = 1; i < 23; i++) {
-      if (i > 10) {
+    for (let i = 0; i < 22; i++) {
+      if (i > 9) {
         if (
           getDayName(
             `${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`

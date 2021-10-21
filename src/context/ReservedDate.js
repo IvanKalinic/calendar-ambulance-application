@@ -15,14 +15,8 @@ export const ReservedDateProvider = ({ children }) => {
   const [reservedDate, setReservedDate] = useState([]);
   const [thisWeekDates, setThisWeekDates] = useState([]);
   const [dayCounter, setDayCounter] = useState([]);
-  const [weekCounter, setWeekCounter] = useState(0);
+  const [current, setCurrent] = useState({});
 
-  const findDoubleDayCounter = (day) => {
-    let tempArray = dayCounter.filter((el) => el === day);
-    if (tempArray.length > 1) {
-      return false;
-    }
-  };
   const value = {
     reservedDate,
     setReservedDate,
@@ -30,8 +24,8 @@ export const ReservedDateProvider = ({ children }) => {
     setThisWeekDates,
     dayCounter,
     setDayCounter,
-    weekCounter,
-    setWeekCounter,
+    current,
+    setCurrent,
   };
 
   return (

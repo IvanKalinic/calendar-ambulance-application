@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { calculateFullDate, getDayName, returnArray } from "../../utils";
-import { months, days, hours, emptyEvents } from "../../consts";
+import { months, hours, emptyEvents } from "../../consts";
 import { useReservedDate } from "../../context/ReservedDate";
-import "./index.scss";
 import MessagePopup from "../MessagePopup";
+import { Edit } from "../../assets/icons";
+import "./index.scss";
 const { datesGenerator } = require("dates-generator");
 
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
-  const [current, setCurrent] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   let tempDays = [];
   let tempReservedDates = [];
@@ -19,22 +19,29 @@ const Calendar = () => {
     thisWeekDates,
     setThisWeekDates,
     dayCounter,
-    weekCounter,
+    current,
+    setCurrent,
   } = useReservedDate();
 
   const handleEvent = (ev, evIndex, index) => {
-    if (
-      dayCounter.includes(reservedDate[index].key.toString()) ||
-      weekCounter === 2
-    ) {
+    setCurrent({ index, evIndex });
+    if (ev.content === "Pauza" || ev.content === "Ne radimo") {
       setShowPopup(false);
+      return;
+    } else if (
+      dayCounter?.includes(reservedDate[index].key.toString()) ||
+      dayCounter?.length === 2
+    ) {
+      if (ev.editable) {
+        setCurrent({ index, evIndex, edit: true });
+        setShowPopup(true);
+      } else {
+        setShowPopup(false);
+      }
     } else {
       setShowPopup(!showPopup);
-      setCurrent({ index, evIndex });
     }
-    // handleAddEvent(day, index)
   };
-  console.log(reservedDate.events);
 
   useEffect(() => {
     const body = {
@@ -42,19 +49,7 @@ const Calendar = () => {
       year: calendar.year,
       day: calendar.day,
     };
-    const { dates, nextMonth, nextYear, previousMonth, previousYear } =
-      datesGenerator(body);
-
-    //za next week opcija
-
-    // setDates(
-    //   dates.find((week) =>
-    //     week.find(
-    //       (day) => day.date === calendar.day && day.month === calendar.month
-    //       // (day) => day.date > calendar.day && day.date < calendar.day + 7
-    //     )
-    //   )
-    // );
+    const { dates } = datesGenerator(body);
 
     dates.map((week) =>
       week.forEach((day) => {
@@ -72,10 +67,6 @@ const Calendar = () => {
 
     setCalendar({
       ...calendar,
-      nextMonth,
-      nextYear,
-      previousMonth,
-      previousYear,
     });
   }, []);
 
@@ -96,6 +87,18 @@ const Calendar = () => {
 
     tempReservedDates?.forEach((day) => {
       day.events = returnArray(day.key, calendar);
+    });
+
+    dayCounter.forEach((el, index) => {
+      let counter = 0;
+      thisWeekDates.map((day) => {
+        if (el === day.key) {
+          counter++;
+        }
+      });
+      if (counter === 0) {
+        dayCounter.splice(index);
+      }
     });
 
     setReservedDate(tempReservedDates);
@@ -120,7 +123,6 @@ const Calendar = () => {
     };
   }, [showPopup]);
 
-  console.log(thisWeekDates);
   return (
     <div className="calendar-parent-container">
       {showPopup && <div className="overlay"></div>}
@@ -132,7 +134,6 @@ const Calendar = () => {
               <MessagePopup
                 showMessage={showPopup}
                 setShowMessage={setShowPopup}
-                current={current}
               />
             </div>
             <tbody>
@@ -140,7 +141,7 @@ const Calendar = () => {
                 <td
                   style={{ padding: "5px 0", flex: "1", textAlign: "center" }}
                 >
-                  Hours
+                  Sati
                 </td>
                 {thisWeekDates.map((day) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
@@ -181,6 +182,11 @@ const Calendar = () => {
                           {reservedDate[index]?.color === "grey"
                             ? "Ne radimo"
                             : ev.content}
+                          {ev.editable ? (
+                            <span style={{ marginLeft: "5px" }}>
+                              <Edit />
+                            </span>
+                          ) : null}
                         </button>
                       ))}
                     </td>
