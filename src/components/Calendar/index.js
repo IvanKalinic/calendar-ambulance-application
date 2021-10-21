@@ -1,24 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { calculateFullDate, getDayName, returnArray } from "../../utils";
 import { months, days, hours, emptyEvents } from "../../consts";
+import { useReservedDate } from "../../context/ReservedDate";
 import "./index.scss";
 import MessagePopup from "../MessagePopup";
 const { datesGenerator } = require("dates-generator");
 
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
-  const [dates, setDates] = useState([]);
-  const [content, setContent] = useState("");
+  const [current, setCurrent] = useState({});
   const [showPopup, setShowPopup] = useState(false);
-  const [reservedDate, setReservedDate] = useState([]);
   let tempDays = [];
   let tempReservedDates = [];
+  const ref = useRef();
+  const {
+    reservedDate,
+    setReservedDate,
+    thisWeekDates,
+    setThisWeekDates,
+    dayCounter,
+    weekCounter,
+  } = useReservedDate();
 
-  const handleEvent = (day, index, e) => {
-    setShowPopup((prev) => !prev);
+  const handleEvent = (ev, evIndex, index) => {
+    if (
+      dayCounter.includes(reservedDate[index].key.toString()) ||
+      weekCounter === 2
+    ) {
+      setShowPopup(false);
+    } else {
+      setShowPopup(!showPopup);
+      setCurrent({ index, evIndex });
+    }
     // handleAddEvent(day, index)
   };
-
   console.log(reservedDate.events);
 
   useEffect(() => {
@@ -53,7 +68,7 @@ const Calendar = () => {
       })
     );
 
-    setDates(tempDays);
+    setThisWeekDates(tempDays);
 
     setCalendar({
       ...calendar,
@@ -65,13 +80,13 @@ const Calendar = () => {
   }, []);
 
   useEffect(() => {
-    dates?.forEach((day) => {
+    thisWeekDates?.forEach((day) => {
       if (getDayName(day.jsDate) === "nedjelja") {
         day.color = "grey";
       }
     });
 
-    dates?.map((day) =>
+    thisWeekDates?.map((day) =>
       tempReservedDates.push({
         key: day.date,
         events: emptyEvents,
@@ -84,18 +99,42 @@ const Calendar = () => {
     });
 
     setReservedDate(tempReservedDates);
-  }, [dates]);
+  }, [thisWeekDates]);
 
+  useEffect(() => {
+    const onBodyClicked = (event) => {
+      if (ref.current && ref.current.contains(event.target)) {
+        return;
+      }
+      if (showPopup && event.target.tagName.toUpperCase() === "INPUT") {
+        return;
+      }
+      if (showPopup) {
+        setShowPopup(!showPopup);
+      }
+    };
+    document.body.addEventListener("click", onBodyClicked, { capture: true });
+
+    return () => {
+      document.body.removeEventListener("click", onBodyClicked);
+    };
+  }, [showPopup]);
+
+  console.log(thisWeekDates);
   return (
     <div className="calendar-parent-container">
+      {showPopup && <div className="overlay"></div>}
       <div className="container">
         <div className="month">{months[calendar.month]}</div>
         <div>
           <table className="calendar-table" style={{ width: "100%" }}>
-            <MessagePopup
-              showMessage={showPopup}
-              setShowMessage={setShowPopup}
-            />
+            <div ref={ref}>
+              <MessagePopup
+                showMessage={showPopup}
+                setShowMessage={setShowPopup}
+                current={current}
+              />
+            </div>
             <tbody>
               <tr className="flex-container">
                 <td
@@ -103,7 +142,7 @@ const Calendar = () => {
                 >
                   Hours
                 </td>
-                {dates.map((day) => (
+                {thisWeekDates.map((day) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
                     <div
                       style={{
@@ -116,7 +155,7 @@ const Calendar = () => {
                   </td>
                 ))}
               </tr>
-              {dates.length > 0 && (
+              {thisWeekDates.length > 0 && (
                 <tr className="flex-container">
                   <td className="cell">
                     <hr />
@@ -127,7 +166,7 @@ const Calendar = () => {
                       </p>
                     ))}
                   </td>
-                  {dates.map((day, index) => (
+                  {thisWeekDates.map((day, index) => (
                     <td key={index} className="cell cell-events">
                       {reservedDate[index]?.events.map((ev, evIndex) => (
                         <button
@@ -137,7 +176,7 @@ const Calendar = () => {
                               ? `${ev.color}`
                               : null
                           }`}
-                          onClick={handleEvent}
+                          onClick={() => handleEvent(ev, evIndex, index)}
                         >
                           {reservedDate[index]?.color === "grey"
                             ? "Ne radimo"
