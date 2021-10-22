@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { calculateFullDate, getDayName, returnArray } from "../../utils";
+import {
+  calculateFullDate,
+  getDayName,
+  returnArray,
+  make15RandPairs,
+} from "../../utils";
 import { months, hours, emptyEvents } from "../../consts";
 import { useReservedDate } from "../../context/ReservedDate";
 import MessagePopup from "../MessagePopup";
@@ -10,8 +15,11 @@ const { datesGenerator } = require("dates-generator");
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
+  const [randomEventsArray, setRandomEventsArray] = useState([]);
   let tempDays = [];
   let tempReservedDates = [];
+  let bigArray = [];
+  // let randomEventsArray = [];
   const ref = useRef();
   const {
     reservedDate,
@@ -19,7 +27,6 @@ const Calendar = () => {
     thisWeekDates,
     setThisWeekDates,
     dayCounter,
-    current,
     setCurrent,
   } = useReservedDate();
 
@@ -103,6 +110,45 @@ const Calendar = () => {
 
     setReservedDate(tempReservedDates);
   }, [thisWeekDates]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (reservedDate) {
+        console.log("Inside of if statement");
+        reservedDate.map((date, index) => {
+          let tempArray = [];
+          date.events.map((ev, index) => {
+            if (ev.color === "green") {
+              tempArray.push(index);
+            }
+          });
+          bigArray[index] = tempArray;
+        });
+        console.log(bigArray);
+        // if (bigArray.length === 7) {
+        //   for (let i = 0; i < 15; i++) {
+        //     let index = randomIntFromInterval(0, 6);
+        //     if (bigArray[index]?.length > 0) {
+        //       let newIndex = randomIntFromInterval(
+        //         bigArray[index][0],
+        //         bigArray[index][bigArray[index].length - 1]
+        //       );
+        //       let delIndex = bigArray[index].indexOf(newIndex);
+        //       bigArray[index].splice(delIndex);
+        //       // setRandomEventsArray([...randomEventsArray, { index, newIndex }]);
+        //       randomEventsArray.push({ index, newIndex });
+        //     } else {
+        //       i--;
+        //     }
+        //   }
+        // }
+      }
+      setRandomEventsArray(make15RandPairs(bigArray));
+    }, 2000);
+  }, [reservedDate]);
+
+  console.log("This is random events array: ");
+  console.log(randomEventsArray);
 
   useEffect(() => {
     const onBodyClicked = (event) => {

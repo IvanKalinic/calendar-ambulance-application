@@ -74,3 +74,30 @@ export const returnArray = (day, calendar) => {
   }
   return temp;
 };
+
+export const randomIntFromInterval = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+export const make15RandPairs = (bigArray) => {
+  let randomEventsArray = new Array(15);
+  if (bigArray.length === 7) {
+    for (let i = 0; i < 15; i++) {
+      let index = randomIntFromInterval(0, 6);
+      console.log(bigArray[index]);
+      if (bigArray[index]?.length > 0) {
+        let newIndex = randomIntFromInterval(
+          bigArray[index][0],
+          bigArray[index][bigArray[index].length - 1]
+        );
+        let delIndex = bigArray[index].indexOf(newIndex);
+        bigArray[index].splice(delIndex, 1);
+        randomEventsArray[i] = { index, newIndex };
+        console.log({ index, newIndex });
+      } else {
+        i--;
+      }
+    }
+  }
+  return randomEventsArray;
+};

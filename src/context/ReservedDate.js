@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const ReservedDateContext = createContext();
 
@@ -16,6 +16,8 @@ export const ReservedDateProvider = ({ children }) => {
   const [thisWeekDates, setThisWeekDates] = useState([]);
   const [dayCounter, setDayCounter] = useState([]);
   const [current, setCurrent] = useState({});
+
+  useEffect(() => {}, []);
 
   const value = {
     reservedDate,
