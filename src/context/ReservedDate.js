@@ -17,8 +17,6 @@ export const ReservedDateProvider = ({ children }) => {
   const [dayCounter, setDayCounter] = useState([]);
   const [current, setCurrent] = useState({});
 
-  useEffect(() => {}, []);
-
   const value = {
     reservedDate,
     setReservedDate,

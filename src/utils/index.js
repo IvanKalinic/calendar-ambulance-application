@@ -86,9 +86,16 @@ export const make15RandPairs = (bigArray) => {
       let index = randomIntFromInterval(0, 6);
       console.log(bigArray[index]);
       if (bigArray[index]?.length > 0) {
-        let newIndex = randomIntFromInterval(
-          bigArray[index][0],
-          bigArray[index][bigArray[index].length - 1]
+        let newIndex = 0;
+        do {
+          newIndex = randomIntFromInterval(
+            bigArray[index][0],
+            bigArray[index][bigArray[index].length - 1]
+          );
+        } while (
+          newIndex === 6 ||
+          newIndex === 16 ||
+          bigArray[index].indexOf(newIndex)
         );
         let delIndex = bigArray[index].indexOf(newIndex);
         bigArray[index].splice(delIndex, 1);

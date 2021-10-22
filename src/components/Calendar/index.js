@@ -8,6 +8,7 @@ import {
 import { months, hours, emptyEvents } from "../../consts";
 import { useReservedDate } from "../../context/ReservedDate";
 import MessagePopup from "../MessagePopup";
+import Loader from "../Loader";
 import { Edit } from "../../assets/icons";
 import "./index.scss";
 const { datesGenerator } = require("dates-generator");
@@ -16,6 +17,7 @@ const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
   const [randomEventsArray, setRandomEventsArray] = useState([]);
+  let loading = true;
   let tempDays = [];
   let tempReservedDates = [];
   let bigArray = [];
@@ -32,7 +34,11 @@ const Calendar = () => {
 
   const handleEvent = (ev, evIndex, index) => {
     setCurrent({ index, evIndex });
-    if (ev.content === "Pauza" || ev.content === "Ne radimo") {
+    if (
+      ev.content === "Pauza" ||
+      ev.content === "Ne radimo" ||
+      ev.clickable === false
+    ) {
       setShowPopup(false);
       return;
     } else if (
@@ -104,7 +110,7 @@ const Calendar = () => {
         }
       });
       if (counter === 0) {
-        dayCounter.splice(index);
+        dayCounter.splice(index, 1);
       }
     });
 
@@ -118,30 +124,13 @@ const Calendar = () => {
         reservedDate.map((date, index) => {
           let tempArray = [];
           date.events.map((ev, index) => {
-            if (ev.color === "green") {
+            if (ev.color === "green" && ev.content === "") {
               tempArray.push(index);
             }
           });
           bigArray[index] = tempArray;
         });
         console.log(bigArray);
-        // if (bigArray.length === 7) {
-        //   for (let i = 0; i < 15; i++) {
-        //     let index = randomIntFromInterval(0, 6);
-        //     if (bigArray[index]?.length > 0) {
-        //       let newIndex = randomIntFromInterval(
-        //         bigArray[index][0],
-        //         bigArray[index][bigArray[index].length - 1]
-        //       );
-        //       let delIndex = bigArray[index].indexOf(newIndex);
-        //       bigArray[index].splice(delIndex);
-        //       // setRandomEventsArray([...randomEventsArray, { index, newIndex }]);
-        //       randomEventsArray.push({ index, newIndex });
-        //     } else {
-        //       i--;
-        //     }
-        //   }
-        // }
       }
       setRandomEventsArray(make15RandPairs(bigArray));
     }, 2000);
@@ -149,6 +138,19 @@ const Calendar = () => {
 
   console.log("This is random events array: ");
   console.log(randomEventsArray);
+
+  randomEventsArray?.map(({ index, newIndex }, counter) => {
+    reservedDate.forEach((date, key) => {
+      if (index === key) {
+        reservedDate[key].events[newIndex].color = "red";
+        reservedDate[key].events[newIndex].clickable = false;
+      }
+    });
+    console.log(counter);
+    if (counter === 14) {
+      loading = false;
+    }
+  });
 
   useEffect(() => {
     const onBodyClicked = (event) => {
@@ -172,6 +174,7 @@ const Calendar = () => {
   return (
     <div className="calendar-parent-container">
       {showPopup && <div className="overlay"></div>}
+      {loading && <Loader />}
       <div className="container">
         <div className="month">{months[calendar.month]}</div>
         <div>
@@ -189,7 +192,7 @@ const Calendar = () => {
                 >
                   Sati
                 </td>
-                {thisWeekDates.map((day) => (
+                {thisWeekDates.map((day, index) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
                     <div
                       style={{
@@ -198,6 +201,10 @@ const Calendar = () => {
                       }}
                     >
                       {getDayName(day.jsDate)}
+                    </div>
+                    <div style={{ marginTop: "-7px", marginBottom: "-5px" }}>
+                      {" "}
+                      {`${reservedDate[index]?.key}.`}
                     </div>
                   </td>
                 ))}
