@@ -13,6 +13,8 @@ import { Edit } from "../../assets/icons";
 import "./index.scss";
 const { datesGenerator } = require("dates-generator");
 
+const MAX_WEEK_EVENTS = 2;
+
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
@@ -32,6 +34,7 @@ const Calendar = () => {
   } = useReservedDate();
 
   const handleEvent = (ev, evIndex, index) => {
+    //check edge cases (pause,not working and week and day counters)
     setCurrent({ index, evIndex });
     if (
       ev.content === "Pauza" ||
@@ -42,7 +45,7 @@ const Calendar = () => {
       return;
     } else if (
       dayCounter?.includes(reservedDate[index].key.toString()) ||
-      dayCounter?.length === 2
+      dayCounter?.length === MAX_WEEK_EVENTS
     ) {
       if (ev.editable) {
         setCurrent({ index, evIndex, edit: true });
@@ -98,9 +101,11 @@ const Calendar = () => {
     );
 
     tempReservedDates?.forEach((day) => {
+      // adding 22 events forEach day
       day.events = returnArray(day.key, calendar);
     });
 
+    // delete key of the day that has passed
     dayCounter.forEach((el, index) => {
       let counter = 0;
       thisWeekDates.map((day) => {
@@ -126,7 +131,7 @@ const Calendar = () => {
               tempArray.push(index);
             }
           });
-          bigArray[index] = tempArray;
+          bigArray[index] = tempArray; // for each day remember "green" event's indexes
         });
       }
       setRandomEventsArray(make15RandPairs(bigArray));
@@ -134,6 +139,7 @@ const Calendar = () => {
   }, [reservedDate]);
 
   randomEventsArray?.map(({ index, newIndex }, counter) => {
+    // making random events red color and unclickable
     reservedDate.forEach((date, key) => {
       if (index === key) {
         reservedDate[key].events[newIndex].color = "red";
@@ -146,6 +152,7 @@ const Calendar = () => {
   });
 
   useEffect(() => {
+    //clicking outside of popup
     const onBodyClicked = (event) => {
       if (ref.current && ref.current.contains(event.target)) {
         return;

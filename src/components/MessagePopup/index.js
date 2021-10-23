@@ -3,6 +3,8 @@ import { useReservedDate } from "../../context/ReservedDate";
 import Warning from "../Warning";
 import "./index.scss";
 
+const MIN_NUM_OF_CHARACTERS = 7;
+
 const MessagePopup = ({ showMessage, setShowMessage }) => {
   const [value, setValue] = useState("");
   const [warning, setWarning] = useState(false);
@@ -15,7 +17,11 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   }, [current]);
 
   const addContentToEvent = () => {
-    if (value.length >= 7 && value !== "Pauza" && value !== "Ne radimo") {
+    if (
+      value.length >= MIN_NUM_OF_CHARACTERS &&
+      value !== "Pauza" &&
+      value !== "Ne radimo"
+    ) {
       reservedDate[index].events[evIndex].content = value;
       reservedDate[index].events[evIndex].color = "red";
       reservedDate[index].events[evIndex].editable = true;
@@ -38,11 +44,14 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   };
 
   const handleSave = () => {
-    if (value) {
+    if (value.length > MIN_NUM_OF_CHARACTERS) {
       reservedDate[index].events[evIndex].content = value;
+      setShowMessage(!showMessage);
+      setValue("");
+    } else {
+      setWarning(true);
+      setValue("");
     }
-    setShowMessage(!showMessage);
-    setValue("");
   };
 
   return (
