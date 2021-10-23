@@ -4,7 +4,7 @@ import Warning from "../Warning";
 import "./index.scss";
 
 const MessagePopup = ({ showMessage, setShowMessage }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
   const [warning, setWarning] = useState(false);
   const { reservedDate, dayCounter, setDayCounter, current } =
     useReservedDate();
@@ -15,7 +15,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   }, [current]);
 
   const addContentToEvent = () => {
-    if (value && value !== "Pauza" && value !== "Ne radimo") {
+    if (value.length >= 7 && value !== "Pauza" && value !== "Ne radimo") {
       reservedDate[index].events[evIndex].content = value;
       reservedDate[index].events[evIndex].color = "red";
       reservedDate[index].events[evIndex].editable = true;
@@ -45,12 +45,6 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
     setValue("");
   };
 
-  console.log("DAY COUNTER:");
-  console.log(current);
-  console.log(reservedDate);
-  console.log(reservedDate[index]?.key?.toString());
-  console.log(dayCounter);
-
   return (
     <>
       {showMessage ? (
@@ -72,7 +66,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
                 className="btn btn-modal"
                 onClick={handleSave}
               >
-                Save
+                Spremi
               </button>
             ) : (
               <button
@@ -80,12 +74,12 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
                 className="btn btn-modal"
                 onClick={addContentToEvent}
               >
-                Add
+                Dodaj
               </button>
             )}
             {edit ? (
-              <button className="btn btn-modal" onClick={deleteContent}>
-                Delete
+              <button className="btn btn-modal red" onClick={deleteContent}>
+                Izbriši
               </button>
             ) : null}
           </div>

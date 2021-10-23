@@ -1,19 +1,3 @@
-export const convertToDate = (isoString) => {
-  const date = new Date(isoString);
-  const fullDate = {
-    year: date.getFullYear(),
-    month: date.getMonth() + 1,
-    day: date.getDate(),
-    time: date.toLocaleTimeString("hr", {
-      timeStyle: "short",
-      hour12: false,
-      timeZone: "CET",
-    }),
-  };
-
-  console.log(fullDate);
-};
-
 export const calculateFullDate = (selectedDate) => {
   return {
     year: selectedDate.getFullYear(),
@@ -84,7 +68,6 @@ export const make15RandPairs = (bigArray) => {
   if (bigArray.length === 7) {
     for (let i = 0; i < 15; i++) {
       let index = randomIntFromInterval(0, 6);
-      console.log(bigArray[index]);
       if (bigArray[index]?.length > 0) {
         let newIndex = 0;
         do {
@@ -100,7 +83,6 @@ export const make15RandPairs = (bigArray) => {
         let delIndex = bigArray[index].indexOf(newIndex);
         bigArray[index].splice(delIndex, 1);
         randomEventsArray[i] = { index, newIndex };
-        console.log({ index, newIndex });
       } else {
         i--;
       }

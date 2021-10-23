@@ -21,7 +21,6 @@ const Calendar = () => {
   let tempDays = [];
   let tempReservedDates = [];
   let bigArray = [];
-  // let randomEventsArray = [];
   const ref = useRef();
   const {
     reservedDate,
@@ -120,7 +119,6 @@ const Calendar = () => {
   useEffect(() => {
     setTimeout(() => {
       if (reservedDate) {
-        console.log("Inside of if statement");
         reservedDate.map((date, index) => {
           let tempArray = [];
           date.events.map((ev, index) => {
@@ -130,14 +128,10 @@ const Calendar = () => {
           });
           bigArray[index] = tempArray;
         });
-        console.log(bigArray);
       }
       setRandomEventsArray(make15RandPairs(bigArray));
     }, 2000);
   }, [reservedDate]);
-
-  console.log("This is random events array: ");
-  console.log(randomEventsArray);
 
   randomEventsArray?.map(({ index, newIndex }, counter) => {
     reservedDate.forEach((date, key) => {
@@ -146,7 +140,6 @@ const Calendar = () => {
         reservedDate[key].events[newIndex].clickable = false;
       }
     });
-    console.log(counter);
     if (counter === 14) {
       loading = false;
     }
@@ -176,9 +169,9 @@ const Calendar = () => {
       {showPopup && <div className="overlay"></div>}
       {loading && <Loader />}
       <div className="container">
-        <div className="month">{months[calendar.month]}</div>
         <div>
           <table className="calendar-table" style={{ width: "100%" }}>
+            <div className="month">{months[calendar.month]}</div>
             <div ref={ref}>
               <MessagePopup
                 showMessage={showPopup}
@@ -187,25 +180,11 @@ const Calendar = () => {
             </div>
             <tbody>
               <tr className="flex-container">
-                <td
-                  style={{ padding: "5px 0", flex: "1", textAlign: "center" }}
-                >
-                  Sati
-                </td>
+                <td className="hours">Sati</td>
                 {thisWeekDates.map((day, index) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
-                    <div
-                      style={{
-                        textAlign: "center",
-                        padding: "5px 0",
-                      }}
-                    >
-                      {getDayName(day.jsDate)}
-                    </div>
-                    <div style={{ marginTop: "-7px", marginBottom: "-5px" }}>
-                      {" "}
-                      {`${reservedDate[index]?.key}.`}
-                    </div>
+                    <div className="days">{getDayName(day.jsDate)}</div>
+                    <div className="keys">{`${reservedDate[index]?.key}.`}</div>
                   </td>
                 ))}
               </tr>
@@ -224,7 +203,7 @@ const Calendar = () => {
                     <td key={index} className="cell cell-events">
                       {reservedDate[index]?.events.map((ev, evIndex) => (
                         <button
-                          key={evIndex}
+                          key={`${evIndex}-${index}`}
                           className={`event-btn ${reservedDate[index]?.color} ${
                             reservedDate[index]?.color !== "grey"
                               ? `${ev.color}`

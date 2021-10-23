@@ -9,8 +9,11 @@ const SingleContent = ({ content }) => {
     <article className="content">
       <header>
         <div className="sameline">
-          <h4>{key}</h4>
-          <button className="btn" onClick={() => setShowInfo(!showInfo)}>
+          <h4 style={{ marginLeft: "20px" }}>{key}</h4>
+          <button
+            className="btn-plus-minus"
+            onClick={() => setShowInfo(!showInfo)}
+          >
             {showInfo ? <Minus /> : <Plus />}
           </button>
         </div>
@@ -23,10 +26,7 @@ const SingleContent = ({ content }) => {
             <ul>
               {info.map(({ color, content }) => (
                 <li className="flex-color-info">
-                  <div
-                    className="color-container"
-                    style={{ backgroundColor: color }}
-                  ></div>
+                  <div className={`color-container ${color}`}></div>
                   <p>{content}</p>
                 </li>
               ))}
