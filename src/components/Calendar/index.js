@@ -33,8 +33,8 @@ const Calendar = () => {
     setCurrent,
   } = useReservedDate();
 
+  //check edge cases (pause,not working and week and day counters)
   const handleEvent = (ev, evIndex, index) => {
-    //check edge cases (pause,not working and week and day counters)
     setCurrent({ index, evIndex });
     if (
       ev.content === "Pauza" ||
@@ -100,8 +100,8 @@ const Calendar = () => {
       })
     );
 
+    // adding 22 events forEach day
     tempReservedDates?.forEach((day) => {
-      // adding 22 events forEach day
       day.events = returnArray(day.key, calendar);
     });
 
@@ -139,7 +139,7 @@ const Calendar = () => {
   }, [reservedDate]);
 
   randomEventsArray?.map(({ index, newIndex }, counter) => {
-    // making random events red color and unclickable
+    // making random events red colored and unclickable
     reservedDate.forEach((date, key) => {
       if (index === key) {
         reservedDate[key].events[newIndex].color = "red";
