@@ -64,12 +64,10 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
       {showMessage ? (
         <div className="modal-content">
           {warning && <Warning />}
-
           <Close
             className="close-modal"
             onClick={() => setShowMessage(!showMessage)}
           />
-
           <div style={{ height: 25 }}></div>
           <input
             type="text"
