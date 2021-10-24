@@ -83,6 +83,7 @@ export const make15RandPairs = (bigArray) => {
         let delIndex = bigArray[index].indexOf(newIndex);
         bigArray[index].splice(delIndex, 1);
         randomEventsArray[i] = { index, newIndex };
+        console.log({ index, newIndex });
       } else {
         i--;
       }

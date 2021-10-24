@@ -127,7 +127,11 @@ const Calendar = () => {
         reservedDate.map((date, index) => {
           let tempArray = [];
           date.events.map((ev, index) => {
-            if (ev.color === "green" && ev.content === "") {
+            if (
+              ev.color === "green" &&
+              ev.content === "" &&
+              date.color !== "grey"
+            ) {
               tempArray.push(index);
             }
           });
@@ -138,8 +142,10 @@ const Calendar = () => {
     }, 2000);
   }, [reservedDate]);
 
+  console.log(reservedDate);
+
+  // making random events red colored and unclickable
   randomEventsArray?.map(({ index, newIndex }, counter) => {
-    // making random events red colored and unclickable
     reservedDate.forEach((date, key) => {
       if (index === key) {
         reservedDate[key].events[newIndex].color = "red";
@@ -151,8 +157,8 @@ const Calendar = () => {
     }
   });
 
+  //clicking outside of popup
   useEffect(() => {
-    //clicking outside of popup
     const onBodyClicked = (event) => {
       if (ref.current && ref.current.contains(event.target)) {
         return;
