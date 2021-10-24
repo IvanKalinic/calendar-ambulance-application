@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useReservedDate } from "../../context/ReservedDate";
 import Warning from "../Warning";
+import { Close } from "../../assets/icons";
 import "./index.scss";
 
 const MIN_NUM_OF_CHARACTERS = 7;
@@ -15,6 +16,10 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   useEffect(() => {
     setWarning(false);
   }, [current]);
+
+  useEffect(() => {
+    setValue("");
+  }, [showMessage]);
 
   const addContentToEvent = () => {
     if (
@@ -59,10 +64,17 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
       {showMessage ? (
         <div className="modal-content">
           {warning && <Warning />}
+
+          <Close
+            className="close-modal"
+            onClick={() => setShowMessage(!showMessage)}
+          />
+
+          <div style={{ height: 25 }}></div>
           <input
             type="text"
             id="appointment"
-            className="form__input"
+            className="input"
             autoComplete="off"
             placeholder=" "
             value={value || reservedDate[index].events[evIndex].content} // event.content

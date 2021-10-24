@@ -1,3 +1,8 @@
+@mixin text-display {
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  text-align: center;
+}
+
 .calendar-parent-container {
   width: 100%;
   padding-top: 50px;
@@ -5,25 +10,22 @@
   margin-top: -50px;
 }
 .month {
-  font-family: "Zen Kaku Gothic New", sans-serif;
+  @include text-display;
   margin-top: 10px;
   font-size: 26px;
   font-weight: bold;
-  text-align: center;
 }
 .hours {
-  font-family: "Zen Kaku Gothic New", sans-serif;
+  @include text-display;
   padding: 5px 0;
   flex: 1;
-  text-align: center;
 }
 .days {
-  font-family: "Zen Kaku Gothic New", sans-serif;
-  text-align: center;
+  @include text-display;
   padding: 5px 0;
 }
 .keys {
-  font-family: "Zen Kaku Gothic New", sans-serif;
+  @include text-display;
   margin-top: -7px;
   margin-bottom: -5px;
 }
@@ -32,7 +34,6 @@
   height: 630px;
   border-radius: 5px;
   margin: 0 auto;
-  // box-shadow: 10px 10px 0px black;
 }
 .calendar-table {
   border: 1px solid black;
@@ -49,7 +50,6 @@
   align-items: center;
 }
 .cell {
-  // border-right: 1px solid black;
   height: 535px;
   text-align: center;
   margin-bottom: 0px;
@@ -76,6 +76,16 @@
   color: black;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.overlay {
+  background: rgba(49, 49, 49, 0.8);
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
 }
 .grey {
   background-color: #b7b8b0;
