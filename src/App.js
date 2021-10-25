@@ -1,13 +1,13 @@
 import React from "react";
 import HomePage from "./modules/HomePage";
-import { ReservedDateProvider } from "./context/ReservedDate";
+import { PossibleDatesProvider } from "./context/PossibleDates";
 
 const App = () => {
   return (
     <>
-      <ReservedDateProvider>
+      <PossibleDatesProvider>
         <HomePage />
-      </ReservedDateProvider>
+      </PossibleDatesProvider>
     </>
   );
 };

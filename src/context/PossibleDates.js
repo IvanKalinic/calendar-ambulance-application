@@ -1,25 +1,25 @@
 import React, { createContext, useContext, useState } from "react";
 
-const ReservedDateContext = createContext();
+const PossibleDatesContext = createContext();
 
 //custom hook
-export const useReservedDate = () => {
-  const reservedDateContext = useContext(ReservedDateContext);
-  if (reservedDateContext === undefined) {
+export const usePossibleDates = () => {
+  const possibleDatesContext = useContext(PossibleDatesContext);
+  if (possibleDatesContext === undefined) {
     throw new Error("useReservedDate must be used within its provider");
   }
-  return reservedDateContext;
+  return possibleDatesContext;
 };
 
-export const ReservedDateProvider = ({ children }) => {
-  const [reservedDate, setReservedDate] = useState([]);
+export const PossibleDatesProvider = ({ children }) => {
+  const [possibleDates, setPossibleDates] = useState([]);
   const [thisWeekDates, setThisWeekDates] = useState([]);
   const [dayCounter, setDayCounter] = useState([]);
   const [current, setCurrent] = useState({});
 
   const value = {
-    reservedDate,
-    setReservedDate,
+    possibleDates,
+    setPossibleDates,
     thisWeekDates,
     setThisWeekDates,
     dayCounter,
@@ -29,8 +29,8 @@ export const ReservedDateProvider = ({ children }) => {
   };
 
   return (
-    <ReservedDateContext.Provider value={value}>
+    <PossibleDatesContext.Provider value={value}>
       {children}
-    </ReservedDateContext.Provider>
+    </PossibleDatesContext.Provider>
   );
 };

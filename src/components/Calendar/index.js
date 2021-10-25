@@ -9,7 +9,7 @@ import {
   make15RandPairs,
 } from "../../utils";
 import { months, hours, emptyEvents } from "../../consts";
-import { useReservedDate } from "../../context/ReservedDate";
+import { usePossibleDates } from "../../context/PossibleDates";
 import MessagePopup from "../MessagePopup";
 import Loader from "../Loader";
 import { Edit } from "../../assets/icons";
@@ -26,13 +26,13 @@ const Calendar = () => {
   let greenEventsArray = [];
   const ref = useRef();
   const {
-    reservedDate,
-    setReservedDate,
+    possibleDates,
+    setPossibleDates,
     thisWeekDates,
     setThisWeekDates,
     dayCounter,
     setCurrent,
-  } = useReservedDate();
+  } = usePossibleDates();
 
   const inNextSevenDays = (day) => {
     return (
@@ -42,7 +42,7 @@ const Calendar = () => {
     );
   };
 
-  const inNextMonthDays = (day, diff) => {
+  const nextMonthOverlap = (day, diff) => {
     return day.date >= 1 && day.date < diff + 1 && day.month > calendar.month;
   };
 
@@ -67,7 +67,7 @@ const Calendar = () => {
       setShowPopup(false);
       return;
     }
-    if (checkDayAndWeekCounter(dayCounter, reservedDate[index].key)) {
+    if (checkDayAndWeekCounter(dayCounter, possibleDates[index].key)) {
       checkIsEventEditable(ev, index, evIndex);
     } else {
       setShowPopup(!showPopup);
@@ -96,14 +96,14 @@ const Calendar = () => {
     if (diff > 0) {
       dates.forEach((week) => {
         week.forEach((day) => {
-          if (inNextMonthDays(day, diff)) {
+          if (nextMonthOverlap(day, diff)) {
             tempDays.push(day);
           }
         });
       });
     }
 
-    setNextMonth(diff, tempDays);
+    setNextMonth(diff, tempDays); // if there is greater amount of days in next month than the current one set that month name
     setThisWeekDates(tempDays);
   }, [setCalendar]);
 
@@ -122,25 +122,25 @@ const Calendar = () => {
       })
     );
 
-    // adding 22 events forEach day (number of 30mins period)
+    // adding 22 events for each day (number of 30mins period)
     tempReservedDates?.forEach((day) => {
       day.events = eventsPerDay(day.key, calendar);
     });
 
-    // delete key of the day that has passed from dayCounter array
+    // delete key of the day that has passed from day counter
     dayCounter.forEach((el, index) => {
       if (!thisWeekDates.filter((day) => day.key == el)) {
         dayCounter.splice(index, 1);
       }
     });
 
-    setReservedDate(tempReservedDates);
+    setPossibleDates(tempReservedDates);
   }, [thisWeekDates]);
 
   useEffect(() => {
     setTimeout(() => {
-      if (reservedDate) {
-        reservedDate.forEach((date, index) => {
+      if (possibleDates) {
+        possibleDates.forEach((date, index) => {
           let tempArray = [];
           date.events.forEach((ev, index) => {
             if (allowedDate(date, ev)) {
@@ -152,14 +152,14 @@ const Calendar = () => {
       }
       setRandomEventsArray(make15RandPairs(greenEventsArray));
     }, 2000);
-  }, [reservedDate]);
+  }, [possibleDates]);
 
   //making random events red colored and unclickable
-  randomEventsArray?.map(({ index, newIndex }, counter) => {
-    reservedDate.forEach((date, key) => {
-      if (index === key) {
-        reservedDate[key].events[newIndex].color = "red";
-        reservedDate[key].events[newIndex].clickable = false;
+  randomEventsArray?.map(({ dayIndex, eventIndex }, counter) => {
+    possibleDates.forEach((date, key) => {
+      if (dayIndex === key) {
+        possibleDates[key].events[eventIndex].color = "red";
+        possibleDates[key].events[eventIndex].clickable = false;
       }
     });
     if (counter === 14) {
@@ -187,7 +187,7 @@ const Calendar = () => {
                 {thisWeekDates.map((day, index) => (
                   <td key={day} style={{ padding: "5px 0", flex: "1" }}>
                     <div className="days">{getDayName(day.jsDate)}</div>
-                    <div className="keys">{`${reservedDate[index]?.key}.`}</div>
+                    <div className="keys">{`${possibleDates[index]?.key}.`}</div>
                   </td>
                 ))}
               </tr>
@@ -204,17 +204,19 @@ const Calendar = () => {
                   </td>
                   {thisWeekDates.map((day, index) => (
                     <td key={index} className="cell cell-events">
-                      {reservedDate[index]?.events.map((ev, evIndex) => (
+                      {possibleDates[index]?.events.map((ev, evIndex) => (
                         <button
                           key={`${evIndex}-${index}`}
-                          className={`event-btn ${reservedDate[index]?.color} ${
-                            reservedDate[index]?.color !== "grey"
+                          className={`event-btn ${
+                            possibleDates[index]?.color
+                          } ${
+                            possibleDates[index]?.color !== "grey"
                               ? `${ev.color}`
                               : null
                           }`}
                           onClick={() => handleEvent(ev, evIndex, index)}
                         >
-                          {reservedDate[index]?.color === "grey"
+                          {possibleDates[index]?.color === "grey"
                             ? "Ne radimo"
                             : ev.content}
                           {ev.editable ? (

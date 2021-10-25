@@ -1,6 +1,10 @@
 const MAX_WEEK_EVENTS = 2;
 const NUMBER_OF_DAY_EVENTS = 22;
 const MIN_NUM_OF_CHARACTERS = 7;
+const NUMBER_OF_RANDOM_EVENTS = 15;
+const WEEK_LENGTH = 7;
+const MORNING_BREAKTIME_INDEX = 6;
+const AFTERNOON_BREAKTIME_INDEX = 16;
 
 export const isValidValue = (value) => {
   return (
@@ -130,27 +134,39 @@ export const randomIntFromInterval = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-export const make15RandPairs = (bigArray) => {
-  let randomEventsArray = new Array(15);
-  if (bigArray.length === 7) {
-    for (let i = 0; i < 15; i++) {
-      let index = randomIntFromInterval(0, 6);
-      if (bigArray[index]?.length > 0) {
-        let newIndex = 0;
+const checkEventEdgeCase = (eventIndex, existingIndex) => {
+  return (
+    eventIndex === MORNING_BREAKTIME_INDEX ||
+    eventIndex === AFTERNOON_BREAKTIME_INDEX ||
+    existingIndex
+  );
+};
+export const make15RandPairs = (greenEventsArray) => {
+  let randomEventsArray = new Array(NUMBER_OF_RANDOM_EVENTS);
+  if (greenEventsArray.length === WEEK_LENGTH) {
+    for (let i = 0; i < NUMBER_OF_RANDOM_EVENTS; i++) {
+      let dayIndex = randomIntFromInterval(0, WEEK_LENGTH - 1);
+      if (greenEventsArray[dayIndex]?.length > 0) {
+        let eventIndex = 0;
+        // give index random value between 1st and last possible event in day and check edge case
         do {
-          newIndex = randomIntFromInterval(
-            bigArray[index][0],
-            bigArray[index][bigArray[index].length - 1]
+          eventIndex = randomIntFromInterval(
+            greenEventsArray[dayIndex][0],
+            greenEventsArray[dayIndex][greenEventsArray[dayIndex].length - 1]
           );
         } while (
-          newIndex === 6 ||
-          newIndex === 16 ||
-          bigArray[index].indexOf(newIndex)
+          // breaktime or existing index
+          checkEventEdgeCase(
+            eventIndex,
+            greenEventsArray[dayIndex].indexOf(eventIndex)
+          )
         );
-        let delIndex = bigArray[index].indexOf(newIndex);
-        bigArray[index].splice(delIndex, 1);
-        randomEventsArray[i] = { index, newIndex };
-        console.log({ index, newIndex });
+        // make green event red
+        greenEventsArray[dayIndex].splice(
+          greenEventsArray[dayIndex].indexOf(eventIndex),
+          1
+        );
+        randomEventsArray[i] = { dayIndex, eventIndex }; // generate one pair (day,event)
       } else {
         i--;
       }
