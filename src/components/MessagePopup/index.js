@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePossibleDates } from "../../context/PossibleDates";
-import { isValidValue, isSameValue, isChangingInProcess } from "../../utils";
+import { isValidValue, isSameValue } from "../../utils";
 import Warning from "../Warning";
 import { Close } from "../../assets/icons";
 import "./index.scss";
@@ -21,36 +21,27 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
     setValue("");
   }, [showMessage]);
 
-  const handleValue = (e) => {
-    if (
-      isChangingInProcess(
-        e.target.value,
-        possibleDates[index].events[evIndex].content.length
-      )
-    ) {
-      possibleDates[index].events[evIndex].content = e.target.value;
-    }
-    setValue(e.target.value);
+  const handleClose = () => {
+    if (!warning) setShowMessage(!showMessage);
   };
 
-  const handleClose = () => {
-    if (!dayCounter.length) {
-      setShowMessage(!showMessage);
-      return;
-    }
-    if (!value && !possibleDates[index].events[evIndex].content.length) {
-      setWarning(true);
-      return;
-    }
-    if (isValidValue(value)) {
-      setWarning(true);
+  const handleValue = (e) => {
+    if (e.target.value !== "") {
+      setValue(e.target.value);
+      possibleDates[index].events[evIndex].content =
+        possibleDates[index].events[evIndex].prevValue; // if x is pressed and value is not saved
+      setWarning(false);
     } else {
-      setShowMessage(!showMessage);
+      possibleDates[index].events[evIndex].content = "";
+      setValue("");
+      setWarning(true);
     }
   };
+
   const addContentToEvent = () => {
     if (isValidValue(value)) {
       possibleDates[index].events[evIndex].content = value;
+      possibleDates[index].events[evIndex].prevValue = value;
       possibleDates[index].events[evIndex].color = "red";
       possibleDates[index].events[evIndex].editable = true;
       setDayCounter([...dayCounter, possibleDates[index].key.toString()]);
@@ -80,6 +71,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
     }
     if (isValidValue(value)) {
       possibleDates[index].events[evIndex].content = value;
+      possibleDates[index].events[evIndex].prevValue = value;
       setShowMessage(!showMessage);
       setValue("");
     } else {
@@ -87,29 +79,6 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
       setValue("");
     }
   };
-
-  //clicking outside of popup
-  useEffect(() => {
-    const onBodyClicked = (event) => {
-      if (ref.current && ref.current.contains(event.target)) {
-        return;
-      }
-      if (showMessage && possibleDates[index].events[evIndex].content !== "") {
-        setShowMessage(!showMessage);
-        return;
-      }
-      if (showMessage && !value) {
-        setShowMessage(true);
-        setWarning(true);
-        return;
-      }
-    };
-    document.body.addEventListener("click", onBodyClicked, { capture: true });
-
-    return () => {
-      document.body.removeEventListener("click", onBodyClicked);
-    };
-  }, [showMessage]);
 
   return (
     <>
@@ -125,7 +94,9 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
             autoComplete="off"
             placeholder=" "
             value={value || possibleDates[index].events[evIndex].content}
-            onChange={(e) => handleValue(e)}
+            onChange={(e) => {
+              handleValue(e);
+            }}
           ></input>
           <div className="buttons-container">
             {edit ? (

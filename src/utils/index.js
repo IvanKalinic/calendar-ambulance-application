@@ -13,9 +13,6 @@ export const isValidValue = (value) => {
     value !== "Ne radimo"
   );
 };
-export const isChangingInProcess = (value, length) => {
-  return value === "" && length >= 7;
-};
 export const isSameValue = (length, value) => {
   return length >= 7 && !value;
 };

@@ -104,7 +104,7 @@ const Calendar = () => {
 
     setNextMonth(diff, tempDays); // if there is greater amount of days in next month than the current one set that month name
     setThisWeekDates(tempDays);
-  }, [setThisWeekDates]);
+  }, []);
 
   useEffect(() => {
     thisWeekDates?.forEach((day) => {
