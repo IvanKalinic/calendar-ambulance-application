@@ -1,3 +1,20 @@
+const MAX_WEEK_EVENTS = 2;
+const NUMBER_OF_DAY_EVENTS = 22;
+const MIN_NUM_OF_CHARACTERS = 7;
+
+export const isValidValue = (value) => {
+  return (
+    value.length >= MIN_NUM_OF_CHARACTERS &&
+    value !== "Pauza" &&
+    value !== "Ne radimo"
+  );
+};
+export const isChangingInProcess = (value, length) => {
+  return value === "" && length >= 7;
+};
+export const isSameValue = (length, value) => {
+  return length >= 7 && !value;
+};
 export const calculateFullDate = (selectedDate) => {
   return {
     year: selectedDate.getFullYear(),
@@ -15,42 +32,92 @@ export const getDayName = (jsDate) => {
   return new Date(jsDate).toLocaleDateString("hr", { weekday: "long" });
 };
 
-export const returnArray = (day, calendar) => {
+export const notAllowedEvent = (ev) => {
+  return (
+    ev.content === "Pauza" ||
+    ev.content === "Ne radimo" ||
+    ev.clickable === false
+  );
+};
+
+export const allowedDate = (date, ev) => {
+  return ev.color === "green" && ev.content === "" && date.color !== "grey";
+};
+export const checkDayAndWeekCounter = (dayCounter, key) => {
+  return (
+    dayCounter?.includes(key.toString()) ||
+    dayCounter?.length === MAX_WEEK_EVENTS
+  );
+};
+
+const checkIsSpecificDay = (calendar, day, dayName) => {
+  return (
+    getDayName(`${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`) ===
+    dayName
+  );
+};
+
+const allowedEvents = (evenDay) => {
+  return {
+    eventsIndex: evenDay ? 12 : 9,
+    breakTimeIndex: evenDay ? 6 : 16,
+  };
+};
+
+// depending on shifts (morning, afternoon) and (breaktime and weekends)
+const populateDayWithEvents = (
+  evenDay,
+  i,
+  breakTimeIndex,
+  day,
+  calendar,
+  temp
+) => {
+  if (
+    evenDay
+      ? checkIsSpecificDay(calendar, day, "nedjelja")
+      : checkIsSpecificDay(calendar, day, "subota") ||
+        checkIsSpecificDay(calendar, day, "nedjelja")
+  ) {
+    temp.push({ color: "grey", content: "Ne radimo" });
+  } else if (i === breakTimeIndex) {
+    temp.push({ color: "yellow", content: "Pauza" });
+  } else {
+    temp.push({ color: "green", content: "" });
+  }
+  return temp;
+};
+
+export const eventsPerDay = (day, calendar) => {
   let temp = [];
-  if (day % 2 === 0) {
-    for (let i = 0; i < 22; i++) {
-      if (i < 12) {
-        if (i === 6) {
-          temp.push({ color: "yellow", content: "Pauza" });
-        } else if (
-          getDayName(
-            `${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`
-          ) === "nedjelja"
-        ) {
-          temp.push({ color: "grey", content: "Ne radimo" });
-        } else {
-          temp.push({ color: "green", content: "" });
-        }
+  const evenDay = day % 2 === 0 ? true : false;
+  const { eventsIndex, breakTimeIndex } = allowedEvents(evenDay);
+  if (evenDay) {
+    for (let i = 0; i < NUMBER_OF_DAY_EVENTS; i++) {
+      if (i < eventsIndex) {
+        temp = populateDayWithEvents(
+          evenDay,
+          i,
+          breakTimeIndex,
+          day,
+          calendar,
+          temp
+        );
       } else {
         temp.push({ color: "grey", content: "Ne radimo" });
       }
     }
   } else {
-    for (let i = 0; i < 22; i++) {
-      if (i > 9) {
-        if (
-          getDayName(
-            `${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`
-          ) === "subota"
-        ) {
-          temp.push({ color: "grey", content: "Ne radimo" });
-        } else {
-          if (i === 16) {
-            temp.push({ color: "yellow", content: "Pauza" });
-          } else {
-            temp.push({ color: "green", content: "" });
-          }
-        }
+    for (let i = 0; i < NUMBER_OF_DAY_EVENTS; i++) {
+      if (i > eventsIndex) {
+        temp = populateDayWithEvents(
+          evenDay,
+          i,
+          breakTimeIndex,
+          day,
+          calendar,
+          temp
+        );
       } else {
         temp.push({ color: "grey", content: "Ne radimo" });
       }

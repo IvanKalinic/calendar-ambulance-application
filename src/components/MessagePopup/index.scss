@@ -3,6 +3,14 @@
   display: block;
   margin: 10px auto 0;
   font-size: 18px;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+
+  &:active {
+    transform: translateY(4px);
+  }
 }
 
 .modal-content {
@@ -11,11 +19,14 @@
   left: 50%;
   transform: translate(-50%, -50%);
   line-height: 1.4;
-  background: #f1f1f1;
   padding: 14px 28px;
   border-radius: 3px;
   max-width: 600px;
   min-width: 300px;
+  // background-color: #fcfcfa;
+  background: #f0f0f0;
+  border: 1px solid black;
+  border-radius: 5px;
 }
 
 .close-modal {
@@ -31,8 +42,10 @@
 .input {
   font-size: 24px;
   outline: none;
-  border-radius: 2px;
+  border: none;
+  border-radius: 5px;
   width: 100%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .buttons-container {

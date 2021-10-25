@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   calculateFullDate,
   getDayName,
-  returnArray,
+  notAllowedEvent,
+  allowedDate,
+  checkDayAndWeekCounter,
+  eventsPerDay,
   make15RandPairs,
 } from "../../utils";
 import { months, hours, emptyEvents } from "../../consts";
@@ -13,8 +16,6 @@ import { Edit } from "../../assets/icons";
 import "./index.scss";
 const { datesGenerator } = require("dates-generator");
 
-const MAX_WEEK_EVENTS = 2;
-
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
@@ -22,7 +23,7 @@ const Calendar = () => {
   let loading = true;
   let tempDays = [];
   let tempReservedDates = [];
-  let bigArray = [];
+  let greenEventsArray = [];
   const ref = useRef();
   const {
     reservedDate,
@@ -33,26 +34,41 @@ const Calendar = () => {
     setCurrent,
   } = useReservedDate();
 
-  //check edge cases (pause,not working and week and day counters)
+  const inNextSevenDays = (day) => {
+    return (
+      day.date > calendar.day &&
+      day.date < calendar.day + 8 &&
+      day.month >= calendar.month
+    );
+  };
+
+  const inNextMonthDays = (day, diff) => {
+    return day.date >= 1 && day.date < diff + 1 && day.month > calendar.month;
+  };
+
+  const setNextMonth = (diff, tempDays) => {
+    if (diff > tempDays.length) {
+      setCalendar({ ...calendar, month: calendar.month + 1 });
+    }
+  };
+  const checkIsEventEditable = (ev, index, evIndex) => {
+    if (ev.editable) {
+      setCurrent({ index, evIndex, edit: true });
+      setShowPopup(true);
+    } else {
+      setShowPopup(false);
+    }
+  };
+
+  //check edge cases (pause,not working, week and day counters)
   const handleEvent = (ev, evIndex, index) => {
     setCurrent({ index, evIndex });
-    if (
-      ev.content === "Pauza" ||
-      ev.content === "Ne radimo" ||
-      ev.clickable === false
-    ) {
+    if (notAllowedEvent(ev)) {
       setShowPopup(false);
       return;
-    } else if (
-      dayCounter?.includes(reservedDate[index].key.toString()) ||
-      dayCounter?.length === MAX_WEEK_EVENTS
-    ) {
-      if (ev.editable) {
-        setCurrent({ index, evIndex, edit: true });
-        setShowPopup(true);
-      } else {
-        setShowPopup(false);
-      }
+    }
+    if (checkDayAndWeekCounter(dayCounter, reservedDate[index].key)) {
+      checkIsEventEditable(ev, index, evIndex);
     } else {
       setShowPopup(!showPopup);
     }
@@ -64,26 +80,32 @@ const Calendar = () => {
       year: calendar.year,
       day: calendar.day,
     };
+
     const { dates } = datesGenerator(body);
 
-    dates.map((week) =>
+    dates.forEach((week) =>
       week.forEach((day) => {
-        if (
-          day.date > calendar.day &&
-          day.date < calendar.day + 8 &&
-          day.month >= calendar.month
-        ) {
+        if (inNextSevenDays(day)) {
           tempDays.push(day);
         }
       })
     );
 
-    setThisWeekDates(tempDays);
+    // if days falls in the next month
+    let diff = 7 - tempDays.length;
+    if (diff > 0) {
+      dates.forEach((week) => {
+        week.forEach((day) => {
+          if (inNextMonthDays(day, diff)) {
+            tempDays.push(day);
+          }
+        });
+      });
+    }
 
-    setCalendar({
-      ...calendar,
-    });
-  }, []);
+    setNextMonth(diff, tempDays);
+    setThisWeekDates(tempDays);
+  }, [setCalendar]);
 
   useEffect(() => {
     thisWeekDates?.forEach((day) => {
@@ -92,7 +114,7 @@ const Calendar = () => {
       }
     });
 
-    thisWeekDates?.map((day) =>
+    thisWeekDates?.forEach((day) =>
       tempReservedDates.push({
         key: day.date,
         events: emptyEvents,
@@ -100,20 +122,14 @@ const Calendar = () => {
       })
     );
 
-    // adding 22 events forEach day
+    // adding 22 events forEach day (number of 30mins period)
     tempReservedDates?.forEach((day) => {
-      day.events = returnArray(day.key, calendar);
+      day.events = eventsPerDay(day.key, calendar);
     });
 
-    // delete key of the day that has passed
+    // delete key of the day that has passed from dayCounter array
     dayCounter.forEach((el, index) => {
-      let counter = 0;
-      thisWeekDates.map((day) => {
-        if (el === day.key) {
-          counter++;
-        }
-      });
-      if (counter === 0) {
+      if (!thisWeekDates.filter((day) => day.key == el)) {
         dayCounter.splice(index, 1);
       }
     });
@@ -124,27 +140,21 @@ const Calendar = () => {
   useEffect(() => {
     setTimeout(() => {
       if (reservedDate) {
-        reservedDate.map((date, index) => {
+        reservedDate.forEach((date, index) => {
           let tempArray = [];
-          date.events.map((ev, index) => {
-            if (
-              ev.color === "green" &&
-              ev.content === "" &&
-              date.color !== "grey"
-            ) {
+          date.events.forEach((ev, index) => {
+            if (allowedDate(date, ev)) {
               tempArray.push(index);
             }
           });
-          bigArray[index] = tempArray; // for each day remember "green" event's indexes
+          greenEventsArray[index] = tempArray; // for each day remember "green" event's indexes
         });
       }
-      setRandomEventsArray(make15RandPairs(bigArray));
+      setRandomEventsArray(make15RandPairs(greenEventsArray));
     }, 2000);
   }, [reservedDate]);
 
-  console.log(reservedDate);
-
-  // making random events red colored and unclickable
+  //making random events red colored and unclickable
   randomEventsArray?.map(({ index, newIndex }, counter) => {
     reservedDate.forEach((date, key) => {
       if (index === key) {
@@ -156,26 +166,6 @@ const Calendar = () => {
       loading = false;
     }
   });
-
-  //clicking outside of popup
-  useEffect(() => {
-    const onBodyClicked = (event) => {
-      if (ref.current && ref.current.contains(event.target)) {
-        return;
-      }
-      if (showPopup && event.target.tagName.toUpperCase() === "INPUT") {
-        return;
-      }
-      if (showPopup) {
-        setShowPopup(!showPopup);
-      }
-    };
-    document.body.addEventListener("click", onBodyClicked, { capture: true });
-
-    return () => {
-      document.body.removeEventListener("click", onBodyClicked);
-    };
-  }, [showPopup]);
 
   return (
     <div className="calendar-parent-container">

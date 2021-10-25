@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useReservedDate } from "../../context/ReservedDate";
+import { isValidValue, isSameValue, isChangingInProcess } from "../../utils";
 import Warning from "../Warning";
 import { Close } from "../../assets/icons";
 import "./index.scss";
-
-const MIN_NUM_OF_CHARACTERS = 7;
 
 const MessagePopup = ({ showMessage, setShowMessage }) => {
   const [value, setValue] = useState("");
@@ -12,6 +11,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   const { reservedDate, dayCounter, setDayCounter, current } =
     useReservedDate();
   const { evIndex, index, edit } = current;
+  const ref = useRef();
 
   useEffect(() => {
     setWarning(false);
@@ -21,12 +21,35 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
     setValue("");
   }, [showMessage]);
 
-  const addContentToEvent = () => {
+  const handleValue = (e) => {
     if (
-      value.length >= MIN_NUM_OF_CHARACTERS &&
-      value !== "Pauza" &&
-      value !== "Ne radimo"
+      isChangingInProcess(
+        e.target.value,
+        reservedDate[index].events[evIndex].content.length
+      )
     ) {
+      reservedDate[index].events[evIndex].content = e.target.value;
+    }
+    setValue(e.target.value);
+  };
+
+  const handleClose = () => {
+    if (!dayCounter.length) {
+      setShowMessage(!showMessage);
+      return;
+    }
+    if (!value && !reservedDate[index].events[evIndex].content.length) {
+      setWarning(true);
+      return;
+    }
+    if (isValidValue(value)) {
+      setWarning(true);
+    } else {
+      setShowMessage(!showMessage);
+    }
+  };
+  const addContentToEvent = () => {
+    if (isValidValue(value)) {
       reservedDate[index].events[evIndex].content = value;
       reservedDate[index].events[evIndex].color = "red";
       reservedDate[index].events[evIndex].editable = true;
@@ -49,7 +72,13 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   };
 
   const handleSave = () => {
-    if (value.length > MIN_NUM_OF_CHARACTERS) {
+    if (
+      isSameValue(reservedDate[index].events[evIndex].content.length, value)
+    ) {
+      setShowMessage(!showMessage);
+      return;
+    }
+    if (isValidValue(value)) {
       reservedDate[index].events[evIndex].content = value;
       setShowMessage(!showMessage);
       setValue("");
@@ -59,15 +88,29 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
     }
   };
 
+  //clicking outside of popup
+  useEffect(() => {
+    const onBodyClicked = (event) => {
+      if (ref.current && ref.current.contains(event.target)) {
+        return;
+      }
+      if (showMessage && reservedDate[index].events[evIndex].content !== "") {
+        setShowMessage(!showMessage);
+      }
+    };
+    document.body.addEventListener("click", onBodyClicked, { capture: true });
+
+    return () => {
+      document.body.removeEventListener("click", onBodyClicked);
+    };
+  }, [showMessage]);
+
   return (
     <>
       {showMessage ? (
-        <div className="modal-content">
+        <div className="modal-content" ref={ref}>
           {warning && <Warning />}
-          <Close
-            className="close-modal"
-            onClick={() => setShowMessage(!showMessage)}
-          />
+          <Close className="close-modal" onClick={() => handleClose()} />
           <div style={{ height: 25 }}></div>
           <input
             type="text"
@@ -75,8 +118,8 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
             className="input"
             autoComplete="off"
             placeholder=" "
-            value={value || reservedDate[index].events[evIndex].content} // event.content
-            onChange={(e) => setValue(e.target.value)}
+            value={value || reservedDate[index].events[evIndex].content}
+            onChange={(e) => handleValue(e)}
           ></input>
           <div className="buttons-container">
             {edit ? (
