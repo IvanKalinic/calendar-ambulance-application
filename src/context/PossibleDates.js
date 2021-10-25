@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState } from "react";
 
 const PossibleDatesContext = createContext();
 
-//custom hook
 export const usePossibleDates = () => {
   const possibleDatesContext = useContext(PossibleDatesContext);
   if (possibleDatesContext === undefined) {
