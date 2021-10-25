@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { usePossibleDates } from "../../context/PossibleDates";
 import { isValidValue, isSameValue } from "../../utils";
 import Warning from "../Warning";
@@ -11,7 +11,6 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   const { possibleDates, dayCounter, setDayCounter, current } =
     usePossibleDates();
   const { evIndex, index, edit } = current;
-  const ref = useRef();
 
   useEffect(() => {
     setWarning(false);
@@ -83,7 +82,7 @@ const MessagePopup = ({ showMessage, setShowMessage }) => {
   return (
     <>
       {showMessage ? (
-        <div className="modal-content" ref={ref}>
+        <div className="modal-content">
           {warning && <Warning />}
           <Close className="close-modal" onClick={handleClose} />
           <div style={{ height: 25 }}></div>

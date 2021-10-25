@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import MessagePopup from "../MessagePopup";
+import ErrorPopup from "../ErrorPopup";
+import Loader from "../Loader";
+import { Edit } from "../../assets/icons";
+import { usePossibleDates } from "../../context/PossibleDates";
+import { months, hours, emptyEvents } from "../../consts";
 import {
   calculateFullDate,
   getDayName,
@@ -8,17 +14,13 @@ import {
   eventsPerDay,
   make15RandPairs,
 } from "../../utils";
-import { months, hours, emptyEvents } from "../../consts";
-import { usePossibleDates } from "../../context/PossibleDates";
-import MessagePopup from "../MessagePopup";
-import Loader from "../Loader";
-import { Edit } from "../../assets/icons";
 import "./index.scss";
 const { datesGenerator } = require("dates-generator");
 
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
+  const [errorPopup, setErrorPopup] = useState(false);
   const [randomEventsArray, setRandomEventsArray] = useState([]);
   let loading = true;
   let tempDays = [];
@@ -56,6 +58,7 @@ const Calendar = () => {
       setShowPopup(true);
     } else {
       setShowPopup(false);
+      setErrorPopup(true);
     }
   };
 
@@ -64,6 +67,7 @@ const Calendar = () => {
     setCurrent({ index, evIndex });
     if (notAllowedEvent(ev)) {
       setShowPopup(false);
+      setErrorPopup(true);
       return;
     }
     if (checkDayAndWeekCounter(dayCounter, possibleDates[index].key)) {
@@ -72,6 +76,8 @@ const Calendar = () => {
       setShowPopup(!showPopup);
     }
   };
+
+  console.log(errorPopup);
 
   useEffect(() => {
     const body = {
@@ -170,6 +176,7 @@ const Calendar = () => {
   return (
     <div className="calendar-parent-container">
       {showPopup && <div className="overlay"></div>}
+      {errorPopup && <div className="overlay"></div>}
       {loading && <Loader />}
       <div className="container">
         <div>
@@ -179,6 +186,7 @@ const Calendar = () => {
               showMessage={showPopup}
               setShowMessage={setShowPopup}
             />
+            <ErrorPopup errorPopup={errorPopup} setErrorPopup={setErrorPopup} />
             <tbody>
               <tr className="flex-container">
                 <td className="hours">Sati</td>

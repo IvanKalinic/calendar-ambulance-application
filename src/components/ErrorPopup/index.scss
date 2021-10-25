@@ -1,0 +1,25 @@
+.modal-content {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  padding: 14px 28px;
+  border-radius: 3px;
+  max-width: 600px;
+  min-width: 300px;
+  // background-color: #fcfcfa;
+  background: #f0f0f0;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.close-modal {
+  position: absolute;
+  top: 7px;
+  right: 3px;
+  padding: 5px 7px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
