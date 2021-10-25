@@ -23,8 +23,7 @@ const Calendar = () => {
   let loading = true;
   let tempDays = [];
   let tempReservedDates = [];
-  let greenEventsArray = [];
-  const ref = useRef();
+  let greenEventsArray = []; // array for open events per day
   const {
     possibleDates,
     setPossibleDates,
@@ -91,7 +90,7 @@ const Calendar = () => {
       })
     );
 
-    // if days falls in the next month
+    // if days fall in the next month
     let diff = 7 - tempDays.length;
     if (diff > 0) {
       dates.forEach((week) => {
@@ -162,6 +161,7 @@ const Calendar = () => {
         possibleDates[key].events[eventIndex].clickable = false;
       }
     });
+    // if all events are loaded
     if (counter === 14) {
       loading = false;
     }
@@ -175,12 +175,10 @@ const Calendar = () => {
         <div>
           <table className="calendar-table" style={{ width: "100%" }}>
             <div className="month">{months[calendar.month]}</div>
-            <div ref={ref}>
-              <MessagePopup
-                showMessage={showPopup}
-                setShowMessage={setShowPopup}
-              />
-            </div>
+            <MessagePopup
+              showMessage={showPopup}
+              setShowMessage={setShowPopup}
+            />
             <tbody>
               <tr className="flex-container">
                 <td className="hours">Sati</td>
