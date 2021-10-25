@@ -77,8 +77,6 @@ const Calendar = () => {
     }
   };
 
-  console.log(errorPopup);
-
   useEffect(() => {
     const body = {
       month: calendar.month,

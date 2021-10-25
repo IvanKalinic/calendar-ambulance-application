@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import "./index.scss";
 
 const ErrorPopup = ({ errorPopup, setErrorPopup }) => {
   useEffect(() => {
