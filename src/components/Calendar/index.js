@@ -161,7 +161,7 @@ const Calendar = () => {
   }, [possibleDates]);
 
   //making random events red colored and unclickable
-  randomEventsArray?.map(({ dayIndex, eventIndex }, counter) => {
+  randomEventsArray?.forEach(({ dayIndex, eventIndex }, counter) => {
     possibleDates.forEach((date, key) => {
       if (dayIndex === key) {
         possibleDates[key].events[eventIndex].color = "red";
