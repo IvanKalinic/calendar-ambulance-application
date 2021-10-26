@@ -17,6 +17,9 @@ import {
 import "./index.scss";
 const { datesGenerator } = require("dates-generator");
 
+const WEEK_LENGTH = 7;
+const NUM_OF_RANDOM_EVENTS = 15;
+
 const Calendar = () => {
   const [calendar, setCalendar] = useState(calculateFullDate(new Date()));
   const [showPopup, setShowPopup] = useState(false);
@@ -95,7 +98,7 @@ const Calendar = () => {
     );
 
     // if days fall in the next month
-    let diff = 7 - tempDays.length;
+    let diff = WEEK_LENGTH - tempDays.length;
     if (diff > 0) {
       dates.forEach((week) => {
         week.forEach((day) => {
@@ -166,7 +169,7 @@ const Calendar = () => {
       }
     });
     // if all events are loaded
-    if (counter === 14) {
+    if (counter === NUM_OF_RANDOM_EVENTS - 1) {
       loading = false;
     }
   });
