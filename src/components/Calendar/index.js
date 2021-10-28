@@ -99,6 +99,8 @@ const Calendar = () => {
 
     // if days fall in the next month
     let diff = WEEK_LENGTH - tempDays.length;
+    setNextMonth(diff, tempDays); // if there is greater amount of days in next month than the current one set that month name
+
     if (diff > 0) {
       dates.forEach((week) => {
         week.forEach((day) => {
@@ -109,10 +111,10 @@ const Calendar = () => {
       });
     }
 
-    setNextMonth(diff, tempDays); // if there is greater amount of days in next month than the current one set that month name
     setThisWeekDates(tempDays);
   }, []);
 
+  console.log(calendar);
   useEffect(() => {
     thisWeekDates?.forEach((day) => {
       if (getDayName(day.jsDate) === "nedjelja") {
