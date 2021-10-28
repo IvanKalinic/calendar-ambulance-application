@@ -114,7 +114,6 @@ const Calendar = () => {
     setThisWeekDates(tempDays);
   }, []);
 
-  console.log(calendar);
   useEffect(() => {
     thisWeekDates?.forEach((day) => {
       if (getDayName(day.jsDate) === "nedjelja") {
