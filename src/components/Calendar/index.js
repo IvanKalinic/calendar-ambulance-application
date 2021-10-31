@@ -62,7 +62,7 @@ const Calendar = () => {
   };
 
   const setNextMonth = (diff, tempDays) => {
-    if (diff > tempDays.length) {
+    if (diff > tempDays.length || calendar.day === 31) {
       setCalendar({ ...calendar, month: calendar.month + 1 });
     }
   };
