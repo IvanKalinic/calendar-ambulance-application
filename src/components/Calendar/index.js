@@ -29,6 +29,7 @@ const Calendar = () => {
   let tempDays = [];
   let tempReservedDates = [];
   let greenEventsArray = []; // array for open events per day
+
   const {
     possibleDates,
     setPossibleDates,
@@ -38,12 +39,22 @@ const Calendar = () => {
     setCurrent,
   } = usePossibleDates();
 
+  const checkMonthEnding = () => {
+    return calendar.day === 30 || calendar.day === 31
+      ? calendar.month + 1
+      : calendar.month;
+  };
+
   const inNextSevenDays = (day) => {
-    return (
-      day.date > calendar.day &&
-      day.date < calendar.day + 8 &&
-      day.month >= calendar.month
-    );
+    if (calendar.day !== 31)
+      return (
+        day.date > calendar.day &&
+        day.date < calendar.day + 8 &&
+        (day.month === calendar.month || day.month === calendar.month + 1)
+      );
+    else {
+      return day.date >= 0 && day.date <= 7 && day.month === calendar.month + 1;
+    }
   };
 
   const nextMonthOverlap = (day, diff) => {
@@ -82,7 +93,7 @@ const Calendar = () => {
 
   useEffect(() => {
     const body = {
-      month: calendar.month,
+      month: checkMonthEnding(),
       year: calendar.year,
       day: calendar.day,
     };
@@ -110,7 +121,6 @@ const Calendar = () => {
         });
       });
     }
-
     setThisWeekDates(tempDays);
   }, []);
 

@@ -53,8 +53,11 @@ export const checkDayAndWeekCounter = (dayCounter, key) => {
 
 const checkIsSpecificDay = (calendar, day, dayName) => {
   return (
-    getDayName(`${calendar.month + 1}/${day}/${calendar.year}, 12:00:00 AM`) ===
-    dayName
+    getDayName(
+      `${
+        calendar.day !== 31 ? calendar.month + 1 : calendar.month + 2
+      }/${day}/${calendar.year}, 12:00:00 AM`
+    ) === dayName
   );
 };
 
