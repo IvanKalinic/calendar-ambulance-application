@@ -102,7 +102,7 @@ const Calendar = () => {
 
     dates.forEach((week) =>
       week.forEach((day) => {
-        if (inNextSevenDays(day)) {
+        if (inNextSevenDays(day) && tempDays.length !== WEEK_LENGTH) {
           tempDays.push(day);
         }
       })
