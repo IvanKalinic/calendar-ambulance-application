@@ -138,7 +138,7 @@ const checkEventEdgeCase = (eventIndex, existingIndex) => {
   return (
     eventIndex === MORNING_BREAKTIME_INDEX ||
     eventIndex === AFTERNOON_BREAKTIME_INDEX ||
-    existingIndex
+    existingIndex === -1
   );
 };
 export const make15RandPairs = (greenEventsArray) => {
@@ -158,7 +158,7 @@ export const make15RandPairs = (greenEventsArray) => {
           // breaktime or existing index
           checkEventEdgeCase(
             eventIndex,
-            greenEventsArray[dayIndex].indexOf(eventIndex)
+            greenEventsArray[dayIndex].indexOf(eventIndex) // -1 if not exists
           )
         );
         // make green event red
