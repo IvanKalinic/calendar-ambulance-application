@@ -1,6 +1,17 @@
 # App deployed on :
 https://elegant-hodgkin-be085f.netlify.app/
 
+# Rquirements in this task:
+
+The task is to create calendar of working hours in ambulance under the following conditions:   
+- ambulance is working on even days from 8 to 14 a.m.   
+- ambulance is working on odd days from 1 to 7 p.m.
+- break times in the morning are from 11 to 11.30 a.m. and in the afternoon from 4 to 4.30 p.m.  
+
+This is the fixed calendar so it's displaying 7 days starting from tomorrow. You can choose free  
+appointments according to restrictions described in app. It's also required to populate 15 random  
+appointments that are busy on every refresh of the app. 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
